@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ txt.contact }} — ElectroPro{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.contact }}</h1>
+        <p class="page-subtitle">{{ txt.contact_desc|default:"Biz bilan bog'laning, savollaringizga javob berishdan mamnunmiz." }}</p>
+    </div>
+</section>
+
+<section class="contact-cards-section">
+    <div class="container">
+        <div class="contact-grid-top">
+            
+            <!-- Address Card -->
+            <div class="contact-card-premium">
+                <div class="card-icon-circle">📍</div>
+                <h3>{{ txt.address|default:"Manzil" }}</h3>
+                <p>{{ txt.address_val|default:"O'zbekiston Respublikasi Toshkent sh., Osiyo ko'chasi, 8-uy" }}</p>
+            </div>
+
+            <!-- Contact Card -->
+            <div class="contact-card-premium">
+                <div class="card-icon-circle">📞</div>
+                <h3>{{ txt.phone_number }} & Email</h3>
+                <p>
+                    (+998 78) 150-11-54<br>
+                    <a href="mailto:info@electropro.uz">info@electropro.uz</a>
+                </p>
+            </div>
+
+            <!-- Working Hours -->
+            <div class="contact-card-premium">
+                <div class="card-icon-circle">🕐</div>
+                <h3>{{ txt.work_hours|default:"Ish vaqti" }}</h3>
+                <p>{{ txt.work_hours_val|default:"Dushanba - Juma: 09:00 - 18:00" }}</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Additional Information & Map -->
+<section class="contact-info-section">
+    <div class="container contact-info-grid">
+        
+        <!-- Info Column -->
+        <div class="info-text-side">
+            <h2 class="section-title-left">{{ txt.extra_info|default:"Qo'shimcha ma'lumotlar" }}</h2>
+            <div class="title-underline-left"></div>
+            
+            <div class="info-item">
+                <h4><span>🚌</span> {{ txt.transport|default:"Jamoat transporti" }}:</h4>
+                <p>{{ txt.transport_val|default:"Avtobuslar: 2, 19, 24, 38, 51. Metro: Minor bekati" }}</p>
+            </div>
+
+            <div class="info-item">
+                <h4><span>🌐</span> {{ txt.social_media|default:"Ijtimoiy tarmoqlar" }}:</h4>
+                <div class="social-links-large">
+                    <a href="#" class="social-btn tg">✈️</a>
+                    <a href="#" class="social-btn fb">📘</a>
+                    <a href="#" class="social-btn ig">📸</a>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <h4><span>📍</span> {{ txt.geolokatsiya|default:"Geolokatsiya" }}:</h4>
+                <code class="geo-code">41.326850, 69.288300</code>
+            </div>
+        </div>
+
+        <!-- Map Column -->
+        <div class="map-embed-side">
+            <iframe src="https://yandex.com/map-widget/v1/?ll=69.288300%2C41.326850&z=16&pt=69.288300,41.326850,pm2rdm" width="100%" height="100%" frameborder="0" allowfullscreen="true"></iframe>
+        </div>
+
+    </div>
+</section>
+
+<!-- Feedback Form Section -->
+<section class="feedback-section">
+    <div class="container">
+        <div class="feedback-card-premium">
+            <div class="section-header">
+                <h2 class="section-title">{{ txt.leave_request }}</h2>
+                <p class="section-desc">{{ txt.feedback_desc|default:"Taklif va shikoyatlaringiz bo'lsa, quyidagi forma orqali yozing." }}</p>
+            </div>
+            
+            <form method="POST" action="{% url 'boglanish' %}" enctype="multipart/form-data" class="premium-form">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>{{ txt.identity|default:"Shaxs turi" }} *</label>
+                        <select name="user_identity" required>
+                            <option value="Jismoniy shaxs">{{ txt.individual|default:"Jismoniy shaxs" }}</option>
+                            <option value="Yuridik shaxs">{{ txt.legal_entity|default:"Yuridik shaxs" }}</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>{{ txt.client_name }} *</label>
+                        <input type="text" name="name" required placeholder="{{ txt.placeholder_name }}">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>{{ txt.phone_number }} *</label>
+                        <input type="text" name="phone" required placeholder="+998">
+                    </div>
+                    <div class="form-field">
+                        <label>{{ txt.additional_phone }}</label>
+                        <input type="text" name="additional_phone" placeholder="+998">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>{{ txt.your_region }} *</label>
+                        <select name="region" required>
+                            {% for key, val in txt.regions.items %}
+                                <option value="{{ val }}">{{ val }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>{{ txt.district }} *</label>
+                        <input type="text" name="district" placeholder="Yunusobod, Chilonzor..." required>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label>{{ txt.exact_address }} *</label>
+                    <input type="text" name="street" placeholder="{{ txt.placeholder_address }}" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>{{ txt.service_type_label|default:"Xizmat turi" }}</label>
+                        <select name="service_type">
+                            <option value="Savol">{{ txt.questions|default:"Savollar" }}</option>
+                            <option value="Elektr Montaj">{{ txt.install_works|default:"Elektr Montaj" }}</option>
+                            <option value="EV Zaryadka">{{ txt.ev_charging|default:"EV Zaryadka" }}</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>{{ txt.urgency }}</label>
+                        <select name="urgency">
+                            <option value="LOW" selected>{{ txt.urgency_low }}</option>
+                            <option value="MEDIUM">{{ txt.urgency_medium }}</option>
+                            <option value="HIGH">{{ txt.urgency_high }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label>{{ txt.upload_photo|default:"Rasm yuklash (Muammo tasviri)" }}</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+
+                <div class="map-picker-wrapper">
+                    <div class="form-field" style="margin-bottom: 15px;">
+                        <label>{{ txt.yandex_map_url_label }} 🗺️</label>
+                        <input type="text" id="yandex-map-input" placeholder="{{ txt.placeholder_yandex }}">
+                        <span class="field-hint" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.55); display: block; margin-top: 5px;">
+                            {{ txt.yandex_map_hint }}
+                        </span>
+                    </div>
+                    <label>{{ txt.location_on_map|default:"Yoki xaritadan tanlang" }} 📍</label>
+                    <div id="picker-map"></div>
+                    <input type="hidden" name="latitude" id="id_latitude">
+                    <input type="hidden" name="longitude" id="id_longitude">
+                </div>
+
+                <div class="form-field">
+                    <label>{{ txt.what_needs_done }} *</label>
+                    <textarea name="message" required placeholder="{{ txt.placeholder_problem }}"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit-glow">
+                    {{ txt.send_req }}
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if LANGUAGE_CODE == 'ru' %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+{% elif LANGUAGE_CODE == 'en' %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=en_US" type="text/javascript"></script>
+{% else %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ" type="text/javascript"></script>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        ymaps.ready(initMaps);
+
+        function initMaps() {
+            const pickerMapEl = document.getElementById('picker-map');
+            if(pickerMapEl) {
+                var pickerMap = new ymaps.Map("picker-map", {
+                    center: [41.311081, 69.240562],
+                    zoom: 13,
+                    controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'geolocationControl']
+                });
+
+                var myPlacemark = new ymaps.Placemark([41.311081, 69.240562], {
+                    balloonContent: 'Uyingizni belgilang / Укажите ваш дом'
+                }, {
+                    preset: 'islands#blueDotIconWithCaption',
+                    draggable: true
+                });
+
+                pickerMap.geoObjects.add(myPlacemark);
+
+                const yandexInput = document.getElementById('yandex-map-input');
+
+                function updateCoords(lat, lng, fromMap = false) {
+                    document.getElementById('id_latitude').value = lat.toFixed(6);
+                    document.getElementById('id_longitude').value = lng.toFixed(6);
+                    
+                    if (fromMap && yandexInput) {
+                        yandexInput.value = lat.toFixed(6) + ', ' + lng.toFixed(6);
+                        yandexInput.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                    }
+                }
+
+                // Drag End Listener
+                myPlacemark.events.add('dragend', function() {
+                    var coords = myPlacemark.geometry.getCoordinates();
+                    updateCoords(coords[0], coords[1], true);
+                });
+
+                // Map Click Listener
+                pickerMap.events.add('click', function(e) {
+                    var coords = e.get('coords');
+                    myPlacemark.geometry.setCoordinates(coords);
+                    updateCoords(coords[0], coords[1], true);
+                });
+
+                // Live Input Parser for Links and Coordinates
+                if (yandexInput) {
+                    yandexInput.addEventListener('input', function(e) {
+                        const val = e.target.value.trim();
+                        if (!val) {
+                            yandexInput.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                            return;
+                        }
+
+                        let parsedLat = null;
+                        let parsedLng = null;
+
+                        // 1. Raw Coordinates Match
+                        const coordRegex = /([+-]?\d+\.\d+)\s*[\s,;]\s*([+-]?\d+\.\d+)/;
+                        const coordMatch = val.match(coordRegex);
+                        if (coordMatch) {
+                            const val1 = parseFloat(coordMatch[1]);
+                            const val2 = parseFloat(coordMatch[2]);
+                            if (val1 >= 37.0 && val1 <= 46.0 && val2 >= 55.0 && val2 <= 75.0) {
+                                parsedLat = val1;
+                                parsedLng = val2;
+                            } else if (val2 >= 37.0 && val2 <= 46.0 && val1 >= 55.0 && val1 <= 75.0) {
+                                parsedLat = val2;
+                                parsedLng = val1;
+                            } else {
+                                parsedLat = val1;
+                                parsedLng = val2;
+                            }
+                        } else {
+                            // 2. Decode URL and parse Yandex point parameters (ll, pt, point)
+                            const decodedVal = decodeURIComponent(val);
+                            const yandexParamRegex = /(?:ll|pt|point|whatshere\[point\])=([+-]?\d+\.\d+)(?:%2C|,|;)([+-]?\d+\.\d+)/i;
+                            const paramMatch = decodedVal.match(yandexParamRegex);
+                            
+                            if (paramMatch) {
+                                const val1 = parseFloat(paramMatch[1]);
+                                const val2 = parseFloat(paramMatch[2]);
+                                if (val1 >= 37.0 && val1 <= 46.0 && val2 >= 55.0 && val2 <= 75.0) {
+                                    parsedLat = val1;
+                                    parsedLng = val2;
+                                } else if (val2 >= 37.0 && val2 <= 46.0 && val1 >= 55.0 && val1 <= 75.0) {
+                                    parsedLat = val2;
+                                    parsedLng = val1;
+                                } else {
+                                    parsedLat = val2;
+                                    parsedLng = val1;
+                                }
+                            } else {
+                                // 3. Fallback generic float extractor
+                                const allFloats = decodedVal.match(/[+-]?\d+\.\d+/g);
+                                if (allFloats && allFloats.length >= 2) {
+                                    for(let i=0; i<allFloats.length - 1; i++) {
+                                        const f1 = parseFloat(allFloats[i]);
+                                        const f2 = parseFloat(allFloats[i+1]);
+                                        if(f1 >= 37.0 && f1 <= 46.0 && f2 >= 55.0 && f2 <= 75.0) {
+                                            parsedLat = f1;
+                                            parsedLng = f2;
+                                            break;
+                                        }
+                                        if(f2 >= 37.0 && f2 <= 46.0 && f1 >= 55.0 && f1 <= 75.0) {
+                                            parsedLat = f2;
+                                            parsedLng = f1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (parsedLat && parsedLng) {
+                            myPlacemark.geometry.setCoordinates([parsedLat, parsedLng]);
+                            pickerMap.setCenter([parsedLat, parsedLng], 16);
+                            updateCoords(parsedLat, parsedLng, false);
+                            yandexInput.style.borderColor = "#2ecc71";
+                        } else {
+                            yandexInput.style.borderColor = "#e74c3c";
+                        }
+                    });
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ txt.all_services }} — ElectroPro{% endblock %}
+
+{% block content %}
+<section class="services-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.all_services }}</h1>
+        <p class="page-subtitle">{{ txt.services_intro|default:"Biz O'zbekiston bo'ylab professional elektr xizmatlarini taqdim etamiz." }}</p>
+    </div>
+</section>
+
+<!-- Elektr Montaj -->
+<section id="elektr-montaj" class="service-detail-section">
+    <div class="container detail-container">
+        <div class="detail-image">
+            <img src="{% static 'img/hero.png' %}" alt="Elektr Montaj">
+        </div>
+        <div class="detail-text">
+            <h2 class="detail-title">🏠 {{ txt.install_works|default:"Elektr Montaj" }}</h2>
+            <p class="detail-desc">{{ txt.install_desc|default:"Yangi qurilgan uylar, kvartiralar va ofislar uchun noldan boshlab to'liq elektr sim tortish xizmati." }}</p>
+            <ul class="detail-list">
+                <li><span>✓</span> {{ txt.meter_install|default:"Loyiha bo'yicha maxsus sxema chizish" }}</li>
+                <li><span>✓</span> {{ txt.socket_install|default:"Mis va alyuminiy simlarni professional tortish" }}</li>
+                <li><span>✓</span> {{ txt.panel_install|default:"Avtomatlar va shchitlarni o'rnatish" }}</li>
+                <li><span>✓</span> {{ txt.light_install|default:"Barcha ishlarni kafolat bilan bajarish" }}</li>
+            </ul>
+            <a href="{% url 'index' %}#contact-form" class="btn-cta">{{ txt.order_now }}</a>
+        </div>
+    </div>
+</section>
+
+<!-- EV Zaryadka -->
+<section id="ev-zaryadka" class="service-detail-section alt-bg">
+    <div class="container detail-container reverse">
+        <div class="detail-image">
+            <img src="{% static 'img/ev_charging.png' %}" alt="EV Zaryadka">
+        </div>
+        <div class="detail-text">
+            <h2 class="detail-title">🚗 {{ txt.ev_charging|default:"EV Zaryadka Stansiyasi" }}</h2>
+            <p class="detail-desc">{{ txt.ev_desc|default:"Uyingizga yoki biznesingizga elektromobil uchun tezkor quvvatlash stansiyasi o'rnatib beramiz." }}</p>
+            <ul class="detail-list">
+                <li><span>✓</span> {{ txt.ev_7kw|default:"7kW — 22kW gacha bo'lgan stansiyalar" }}</li>
+                <li><span>✓</span> {{ txt.ev_tesla|default:"Tesla, BYD, Chevrolet uchun universal" }}</li>
+                <li><span>✓</span> {{ txt.ev_smart|default:"Ilovadan masofaviy boshqarish" }}</li>
+                <li><span>✓</span> {{ txt.ev_warranty|default:"O'rnatish + sozlash + kafolat" }}</li>
+            </ul>
+            <a href="{% url 'index' %}#contact-form" class="btn-cta">{{ txt.order_now }}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Kotta stalbalarga chiqish -->
+<section id="stalba" class="service-detail-section">
+    <div class="container detail-container">
+        <div class="detail-image placeholder-img">
+            🗼
+        </div>
+        <div class="detail-text">
+            <h2 class="detail-title">⚡ {{ txt.high_voltage|default:"Yuqori kuchlanish ishlari" }}</h2>
+            <p class="detail-desc">{{ txt.high_voltage_desc|default:"Sanoat obyektlari, mahalla va ko'chalardagi baland ustunlarda bajariladigan elektr ishlari." }}</p>
+            <ul class="detail-list">
+                <li><span>✓</span> {{ txt.pole_works|default:"Stalbalarda sim tortish" }}</li>
+                <li><span>✓</span> {{ txt.transformer_works|default:"Transformatorlarni sozlash va ta'mirlash" }}</li>
+                <li><span>✓</span> {{ txt.industrial_panels|default:"Sanoat shkaflarini yig'ish" }}</li>
+                <li><span>✓</span> {{ txt.safety_first|default:"Xavfsizlik qoidalariga to'liq rioya qilish" }}</li>
+            </ul>
+            <a href="{% url 'index' %}#contact-form" class="btn-cta">{{ txt.order_now }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

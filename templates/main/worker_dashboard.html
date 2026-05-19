@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroPro - Ishchilar Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f5a623;
+            --bg-dark: #090b0e;
+            --bg-card: #14171c;
+            --text-main: #ffffff;
+            --text-muted: #8b949e;
+            --success: #2ea043;
+            --warning: #f1e05a;
+            --danger: #ff4d4d;
+            --border-color: rgba(255,255,255,0.05);
+        }
+
+        body.light-theme {
+            --bg-dark: #f4f7f6;
+            --bg-card: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border-color: rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; overflow: hidden; transition: 0.3s; }
+
+        .sidebar { width: 260px; background: var(--bg-card); border-right: 1px solid var(--border-color); padding: 2rem; display: flex; flex-direction: column; }
+        .sidebar h2 { font-size: 1.5rem; margin-bottom: 3rem; color: var(--primary); }
+        .nav-item { padding: 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; margin-bottom: 0.5rem; transition: 0.3s; cursor: pointer; border: none; background: none; text-align: left; width: 100%; font-size: 1rem; }
+        .nav-item.active, .nav-item:hover { background: rgba(245, 166, 35, 0.1); color: var(--primary); }
+
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+
+        .job-card { background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .job-header { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        .job-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+        .job-date { font-size: 0.8rem; color: var(--text-muted); }
+        
+        .job-body { margin-bottom: 1.5rem; }
+        .job-info { margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .job-info span { color: var(--text-muted); width: 120px; display: inline-block; }
+
+        .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; }
+        .btn-accept { background: var(--success); color: white; }
+        .btn-reject { background: var(--danger); color: white; }
+        .btn-complete { background: var(--primary); color: #000; }
+        .btn:hover { opacity: 0.8; transform: scale(1.02); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .messages { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 10px; color: white; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .alert-success { background: var(--success); }
+        .alert-warning { background: var(--warning); color: #000; }
+    </style>
+</head>
+<body>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="sidebar">
+        <h2>Ishchi Paneli</h2>
+        <button class="nav-item active" onclick="showTab('available')">🎯 Yangi Ishlar</button>
+        <button class="nav-item" onclick="showTab('my_jobs')">🛠 Mening Ishlarim</button>
+        <button class="nav-item" onclick="showTab('history')">✅ Bajarilganlar</button>
+        
+        <div style="margin-top: auto;">
+            <a href="{% url 'index' %}" class="nav-item" style="color: var(--text-muted); display: block; text-decoration: none;">🌐 Saytga qaytish</a>
+            <a href="{% url 'logout' %}" class="nav-item" style="color: var(--danger); display: block; text-decoration: none; font-weight: bold;">🚪 Chiqish</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 id="tab-title">Yangi Ishlar</h1>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="color: var(--text-muted);">Salom, {{ user.username }}!</span>
+                <select id="theme-select" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.3rem; border-radius: 5px;" onchange="changeTheme(this.value)">
+                    <option value="dark">🌙 Dark</option>
+                    <option value="light">☀️ Light</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Available Jobs -->
+        <div id="available" class="tab-content active">
+            {% for job in available_jobs %}
+            <div class="job-card">
+                <div class="job-header">
+                    <div class="job-title">{{ job.service_type }}</div>
+                    <div class="job-date">{{ job.created_at|date:"d.m.Y H:i" }}</div>
+                </div>
+                <div class="job-body">
+                    <div class="job-info"><span>Mijoz:</span> {{ job.name }}</div>
+                    <div class="job-info"><span>Hudud:</span> {{ job.region }}</div>
+                    <div class="job-info"><span>Vaqt:</span> {{ job.preferred_time }}</div>
+                    <div class="job-info"><span>Izoh:</span> {{ job.message|default:"Yo'q" }}</div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{% url 'accept_job' job.id %}" class="btn btn-accept">Ishni Qabul Qilish</a>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted); text-align: center; margin-top: 5rem;">Hozircha yangi ishlar yo'q. Kuting...</p>
+            {% endfor %}
+        </div>
+
+        <!-- My Jobs -->
+        <div id="my_jobs" class="tab-content">
+            {% for job in my_jobs %}
+            <div class="job-card" style="border-left: 5px solid var(--primary);">
+                <div class="job-header">
+                    <div class="job-title">{{ job.service_type }}</div>
+                    <div class="job-date">Qabul qilindi: {{ job.created_at|date:"d.m.Y" }}</div>
+                </div>
+                <div class="job-body">
+                    <div class="job-info"><span>Mijoz:</span> {{ job.name }}</div>
+                    <div class="job-info"><span>Telefon:</span> <a href="tel:{{ job.phone }}" style="color: var(--primary); font-weight: bold;">{{ job.phone }}</a></div>
+                    <div class="job-info"><span>Hudud:</span> {{ job.region }}</div>
+                    <div class="job-info"><span>Izoh:</span> {{ job.message }}</div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{% url 'complete_job' job.id %}" class="btn btn-complete">✅ Bajarildi</a>
+                    <a href="{% url 'reject_job' job.id %}" class="btn btn-reject" onclick="return confirm('Ishdan voz kechmoqchimisiz?')">❌ Voz kechish</a>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted); text-align: center; margin-top: 5rem;">Sizda hozircha faol ishlar yo'q.</p>
+            {% endfor %}
+        </div>
+
+        <!-- History -->
+        <div id="history" class="tab-content">
+            {% for job in completed_jobs %}
+            <div class="job-card" style="opacity: 0.7;">
+                <div class="job-header">
+                    <div class="job-title">{{ job.service_type }}</div>
+                    <div class="job-date">Bajarildi</div>
+                </div>
+                <div class="job-body">
+                    <div class="job-info"><span>Mijoz:</span> {{ job.name }}</div>
+                    <div class="job-info"><span>Sana:</span> {{ job.created_at|date:"d.m.Y" }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--text-muted); text-align: center; margin-top: 5rem;">Tarix bo'sh.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            const titles = {'available':'Yangi Ishlar', 'my_jobs':'Mening Ishlarim', 'history':'Bajarilganlar'};
+            document.getElementById('tab-title').innerText = titles[tabId];
+        }
+
+        function changeTheme(theme) {
+            if (theme === 'light') document.body.classList.add('light-theme');
+            else document.body.classList.remove('light-theme');
+            localStorage.setItem('worker-theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('worker-theme') || 'dark';
+        document.getElementById('theme-select').value = savedTheme;
+        changeTheme(savedTheme);
+
+        // Hide messages after 3s
+        setTimeout(() => {
+            const msgs = document.querySelector('.messages');
+            if (msgs) msgs.style.display = 'none';
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ txt.about_us }} — ElectroPro{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.about_us }}</h1>
+        <p class="page-subtitle">{{ txt.about_intro|default:"ElectroPro — O'zbekistondagi eng ishonchli elektr xizmat provayderi." }}</p>
+        <div class="hero-actions-landing" style="margin-top: 35px; text-align: center;">
+            <a href="{% url 'ariza' %}" class="btn-primary-large" style="display: inline-block; text-decoration: none;">
+                {{ txt.order_now|default:"Ariza Qoldirish / Usta Chaqirish" }} ⚡
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Missiya -->
+<section class="about-mission-section">
+    <div class="container mission-container">
+        <div class="mission-image">
+            <img src="{% static 'img/hero.png' %}" alt="Our Mission">
+        </div>
+        <div class="mission-text">
+            <h2 class="section-title-left">{{ txt.our_mission|default:"Bizning Missiyamiz" }}</h2>
+            <p class="mission-desc">
+                {{ txt.mission_text|default:"ElectroPro 2016-yilda tashkil etilgan bo'lib, bugungi kunda O'zbekiston bo'ylab 10,000 dan ortiq muvaffaqiyatli loyihalarni amalga oshirgan. Biz har bir uyni, binoni va korxonani xavfsiz va samarali elektr tizimi bilan ta'minlashni o'z vazifamiz deb bilamiz." }}
+            </p>
+            <div class="stats-grid-about">
+                <div class="about-stat-card">
+                    <h2 class="stat-val">10+</h2>
+                    <p class="stat-name">{{ txt.years|default:"Yil" }} {{ txt.experience|default:"Tajriba" }}</p>
+                </div>
+                <div class="about-stat-card">
+                    <h2 class="stat-val">50+</h2>
+                    <p class="stat-name">{{ txt.exp_masters }}</p>
+                </div>
+                <div class="about-stat-card">
+                    <h2 class="stat-val">10k+</h2>
+                    <p class="stat-name">{{ txt.done_orders }}</p>
+                </div>
+                <div class="about-stat-card">
+                    <h2 class="stat-val">3 {{ txt.years }}</h2>
+                    <p class="stat-name">{{ txt.warranty|default:"Kafolat" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Qadriyatlar -->
+<section class="values-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">{{ txt.our_values|default:"Bizning Qadriyatlarimiz" }}</h2>
+            <div class="title-underline"></div>
+        </div>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">🛡️</div>
+                <h3>{{ txt.safety|default:"Xavfsizlik" }}</h3>
+                <p>{{ txt.safety_desc|default:"Barcha ishlarimizda xalqaro xavfsizlik standartlariga qat'iy rioya qilinadi. Sertifikatlangan materiallar ishlatiladi." }}</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">⚡</div>
+                <h3>{{ txt.speed|default:"Tezkorlik" }}</h3>
+                <p>{{ txt.speed_desc|default:"Ariza qabul qilingandan so'ng, qisqa vaqt ichida usta siz bilan bog'lanadi va ishni boshlaydi." }}</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">✅</div>
+                <h3>{{ txt.warranty_title|default:"Kafolat" }}</h3>
+                <p>{{ txt.warranty_desc|default:"Barcha bajarilgan ishlarimizga uzoq muddatli kafolat beriladi. Biz sifatga javob beramiz." }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

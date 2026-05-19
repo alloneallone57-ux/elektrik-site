@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ txt.vacancies }} — ElectroPro{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.vacancies }}</h1>
+        <p class="page-subtitle">{{ txt.vacancies_intro|default:"Biz bilan ishlashni xohlaysizmi? Hoziroq murojaat qiling!" }}</p>
+    </div>
+</section>
+
+<section class="vacancies-section-main">
+    <div class="container">
+        <div class="vacancies-list-container">
+            
+            <div class="vacancy-card-premium">
+                <div class="vacancy-header">
+                    <h3>⚡ {{ txt.vac_q1|default:"Elektrik Usta (Katta)" }}</h3>
+                    <span class="status-badge active">{{ txt.active|default:"Faol" }}</span>
+                </div>
+                <p class="vacancy-desc">{{ txt.vac_d1|default:"Montaj ishlari, EV zaryadka o'rnatish va yuqori kuchlanish bilan ishlash tajribasi talab etiladi." }}</p>
+                <div class="vacancy-meta">
+                    <span>📍 {{ txt.tashkent_city }}</span>
+                    <span>💰 5-10 млн {{ txt.som }}</span>
+                    <span>🕐 {{ txt.full_time|default:"To'liq ish kuni" }}</span>
+                </div>
+                <a href="{% url 'index' %}#contact-form" class="btn-apply-premium">{{ txt.apply_now|default:"Murojaat qilish" }}</a>
+            </div>
+
+            <div class="vacancy-card-premium">
+                <div class="vacancy-header">
+                    <h3>📞 {{ txt.vac_q2|default:"Operator (Qo'ng'iroq markazi)" }}</h3>
+                    <span class="status-badge active">{{ txt.active|default:"Faol" }}</span>
+                </div>
+                <p class="vacancy-desc">{{ txt.vac_d2|default:"Mijozlardan arizalar qabul qilish, ustalarni yo'naltirish va muloqot yuritish." }}</p>
+                <div class="vacancy-meta">
+                    <span>📍 {{ txt.tashkent_city }}</span>
+                    <span>💰 3-5 млн {{ txt.som }}</span>
+                    <span>🕐 09:00 — 18:00</span>
+                </div>
+                <a href="{% url 'index' %}#contact-form" class="btn-apply-premium">{{ txt.apply_now|default:"Murojaat qilish" }}</a>
+            </div>
+
+            <div class="vacancy-card-premium">
+                <div class="vacancy-header">
+                    <h3>📊 {{ txt.vac_q3|default:"Junior Elektrik (Shogird)" }}</h3>
+                    <span class="status-badge active">{{ txt.active|default:"Faol" }}</span>
+                </div>
+                <p class="vacancy-desc">{{ txt.vac_d3|default:"Tajribali ustalardan o'rganish imkoniyati. Tajribasiz yoshlar ham murojaat qilishi mumkin." }}</p>
+                <div class="vacancy-meta">
+                    <span>📍 {{ txt.tashkent_city }}</span>
+                    <span>💰 2-4 млн {{ txt.som }}</span>
+                    <span>🕐 {{ txt.full_time|default:"To'liq ish kuni" }}</span>
+                </div>
+                <a href="{% url 'index' %}#contact-form" class="btn-apply-premium">{{ txt.apply_now|default:"Murojaat qilish" }}</a>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

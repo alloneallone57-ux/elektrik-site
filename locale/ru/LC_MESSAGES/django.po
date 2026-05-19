@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ElectroPro\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-15 11:12+0500\n"
+"PO-Revision-Date: 2026-05-15 11:12+0500\n"
+"Last-Translator: Antigravity\n"
+"Language-Team: RU\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "ElectroPro - Professional Elektr Xizmatlari"
+msgstr "ElectroPro - Профессиональные Электроуслуги"
+
+msgid "Toshkent shahri"
+msgstr "г. Ташкент"
+
+msgid "Xizmatlar"
+msgstr "Услуги"
+
+msgid "Biz haqimizda"
+msgstr "О нас"
+
+msgid "Arizani kuzatish"
+msgstr "Отследить заявку"
+
+msgid "Kirish"
+msgstr "Вход"
+
+msgid "Ariza qoldirish"
+msgstr "Оставить заявку"
+
+msgid "Kabinet"
+msgstr "Кабинет"
+
+msgid "Professional Elektr Xizmatlari"
+msgstr "Профессиональные Электроуслуги"
+
+msgid "Toshkentda Professional"
+msgstr "Профессиональные"
+
+msgid "Elektriklar"
+msgstr "Электрики в Ташкенте"
+
+msgid "Uyingiz yoki ofisingiz uchun ishonchli va malakali ustalarni chaqiring. Barcha ishlarga kafolat beramiz."
+msgstr "Вызовите надежных и квалифицированных мастеров для дома или офиса. Даем гарантию на все работы."

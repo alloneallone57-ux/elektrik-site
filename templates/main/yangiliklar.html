@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ txt.news }} — ElectroPro{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.news }}</h1>
+        <p class="page-subtitle">{{ txt.news_intro|default:"Kompaniyamiz va elektr sohasidagi so'nggi yangiliklar." }}</p>
+    </div>
+</section>
+
+<section class="news-section-main">
+    <div class="container">
+        <div class="news-grid-premium">
+            
+            <div class="news-card-premium">
+                <div class="news-thumb gradient-1">⚡</div>
+                <div class="news-content">
+                    <p class="news-date">2026-yil, 1-may</p>
+                    <h3>{{ txt.news_t1|default:"ElectroPro yangi elektromobil zaryadlash xizmatini boshladi" }}</h3>
+                    <p class="news-excerpt">{{ txt.news_d1|default:"Endi 22kW gacha bo'lgan zaryadlash stansiyalarini uyingizga o'rnatib berish xizmati mavjud." }}</p>
+                    <a href="#" class="news-link">{{ txt.read_more|default:"Batafsil o'qish" }} →</a>
+                </div>
+            </div>
+
+            <div class="news-card-premium">
+                <div class="news-thumb gradient-2">🏠</div>
+                <div class="news-content">
+                    <p class="news-date">2026-yil, 15-aprel</p>
+                    <h3>{{ txt.news_t2|default:"Uylar uchun aqlli elektr tizimi qo'shildi" }}</h3>
+                    <p class="news-excerpt">{{ txt.news_d2|default:"Smart home texnologiyalari bilan uyingizni ilovadan boshqaring." }}</p>
+                    <a href="#" class="news-link">{{ txt.read_more|default:"Batafsil o'qish" }} →</a>
+                </div>
+            </div>
+
+            <div class="news-card-premium">
+                <div class="news-thumb gradient-3">🏆</div>
+                <div class="news-content">
+                    <p class="news-date">2026-yil, 1-mart</p>
+                    <h3>{{ txt.news_t3|default:"ElectroPro 2025-yilning eng yaxshi xizmat provayderi" }}</h3>
+                    <p class="news-excerpt">{{ txt.news_d3|default:"Toshkent biznes forumida 'Yilning eng yaxshi xizmati' mukofotiga sazovor bo'ldik." }}</p>
+                    <a href="#" class="news-link">{{ txt.read_more|default:"Batafsil o'qish" }} →</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

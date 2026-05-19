@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+{% load static %}{% load i18n %}
+
+{% block content %}
+<!-- Hero & Form Section -->
+<section class="hero-section">
+    <div class="animated-bg">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+    </div>
+    <div class="container hero-container">
+        
+        <!-- Left: Headline & Stats -->
+        <div class="hero-text-side">
+            <h1 class="hero-title">
+                {{ txt.hero_title_1 }} <span class="accent-text">{{ txt.hero_title_2 }}</span>
+            </h1>
+            <p class="hero-description">
+                {{ txt.hero_desc }}
+            </p>
+            
+            <div class="hero-actions">
+                <a href="#contact-form" class="btn-primary-large">{{ txt.order_now }}</a>
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <h3 class="stat-number">50+</h3>
+                        <p class="stat-label">{{ txt.exp_masters }}</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 class="stat-number">10k+</h3>
+                        <p class="stat-label">{{ txt.done_orders }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Compact Glassmorphism Form -->
+        <div class="hero-form-side">
+            <div id="contact-form" class="glass-form-card">
+                <h2 class="form-title">{{ txt.leave_request }}</h2>
+                <form action="{% url 'index' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>{{ txt.client_name }} *</label>
+                            <input type="text" name="name" placeholder="{{ txt.placeholder_name }}" required>
+                        </div>
+                        <div class="form-field">
+                            <label>{{ txt.phone_number }} *</label>
+                            <input type="tel" name="phone" placeholder="+998 90 123 45 67" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>{{ txt.additional_phone }}</label>
+                            <input type="tel" name="additional_phone" placeholder="+998 99 987 65 43">
+                        </div>
+                        <div class="form-field">
+                            <label>{{ txt.urgency }}</label>
+                            <select name="urgency">
+                                <option value="LOW" selected>{{ txt.urgency_low }}</option>
+                                <option value="MEDIUM">{{ txt.urgency_medium }}</option>
+                                <option value="HIGH">{{ txt.urgency_high }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>{{ txt.your_region }} *</label>
+                            <select name="region" required>
+                                {% for key, val in txt.regions.items %}
+                                    <option value="{{ val }}">{{ val }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>{{ txt.district }} *</label>
+                            <input type="text" name="district" placeholder="Yunusobod tumani, Chilonzor tumani..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>{{ txt.exact_address }} *</label>
+                        <input type="text" name="street" placeholder="{{ txt.placeholder_address }}" required>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>{{ txt.what_needs_done }}</label>
+                        <textarea name="message" placeholder="{{ txt.placeholder_problem }}"></textarea>
+                    </div>
+
+                    <div class="map-picker-wrapper">
+                        <div class="form-field" style="margin-bottom: 15px;">
+                            <label>{{ txt.yandex_map_url_label }} 🗺️</label>
+                            <input type="text" id="yandex-map-input" placeholder="{{ txt.placeholder_yandex }}">
+                            <span class="field-hint" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.55); display: block; margin-top: 5px;">
+                                {{ txt.yandex_map_hint }}
+                            </span>
+                        </div>
+                        <label>{{ txt.location_on_map|default:"Yoki xaritadan tanlang" }} 📍</label>
+                        <div id="picker-map"></div>
+                        <input type="hidden" name="latitude" id="id_latitude">
+                        <input type="hidden" name="longitude" id="id_longitude">
+                    </div>
+
+                    <button type="submit" class="btn-submit-glow">{{ txt.send_req }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Checklist Section -->
+<section class="services-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">{{ txt.electrical_services }}</h2>
+            <div class="title-underline"></div>
+        </div>
+        
+        <div class="services-grid-new">
+            <!-- Category 1 -->
+            <div class="service-category-card">
+                <div class="card-icon">🏗️</div>
+                <h3>{{ txt.install_works|default:"O'rnatish ishlari" }}</h3>
+                <ul class="check-list">
+                    <li><span>✓</span> {{ txt.meter_install|default:"Hisoblagich o'rnatish" }}</li>
+                    <li><span>✓</span> {{ txt.socket_install|default:"Rozetka va montaj" }}</li>
+                    <li><span>✓</span> {{ txt.light_install|default:"Lyustra o'rnatish" }}</li>
+                    <li><span>✓</span> {{ txt.panel_install|default:"Shchit yig'ish" }}</li>
+                </ul>
+            </div>
+            
+            <!-- Category 2 -->
+            <div class="service-category-card">
+                <div class="card-icon">🔧</div>
+                <h3>{{ txt.repair_works|default:"Ta'mirlash ishlari" }}</h3>
+                <ul class="check-list">
+                    <li><span>✓</span> {{ txt.short_circuit|default:"Qisqa tutashuvni tuzatish" }}</li>
+                    <li><span>✓</span> {{ txt.wire_replace|default:"Simlarni almashtirish" }}</li>
+                    <li><span>✓</span> {{ txt.breaker_replace|default:"Avtomatlarni almashtirish" }}</li>
+                    <li><span>✓</span> {{ txt.grounding|default:"Yerga ulash (Zazemleniya)" }}</li>
+                </ul>
+            </div>
+            
+            <!-- Category 3 -->
+            <div class="service-category-card">
+                <div class="card-icon">⚡</div>
+                <h3>{{ txt.special_works|default:"Maxsus xizmatlar" }}</h3>
+                <ul class="check-list">
+                    <li><span>✓</span> {{ txt.ev_charging|default:"EV Zaryadka stansiyasi" }}</li>
+                    <li><span>✓</span> {{ txt.high_voltage|default:"Yuqori kuchlanish ishlari" }}</li>
+                    <li><span>✓</span> {{ txt.smart_home|default:"Aqlli uy tizimi" }}</li>
+                    <li><span>✓</span> {{ txt.project_design|default:"Loyihalash va montaj" }}</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section-footer">
+            <a href="{% url 'xizmatlar' %}" class="btn-outline-premium">{{ txt.all_services }}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Regional Coverage Map -->
+<section class="map-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">{{ txt.coverage_areas }}</h2>
+            <p class="section-desc">{{ txt.coverage_desc }}</p>
+        </div>
+        
+        <div id="main-map" class="premium-map"></div>
+    </div>
+</section>
+
+<!-- Our Masters Grid -->
+<section class="masters-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">{{ txt.our_specialists }}</h2>
+            <p class="section-desc">{{ txt.specialists_desc }}</p>
+        </div>
+        
+        <div class="masters-grid-premium">
+            {% for master in masters %}
+            <div class="master-card">
+                <div class="master-header">
+                    <div class="master-image-wrapper">
+                        {% if master.image %}
+                        <img src="{{ master.image.url }}" alt="{{ master.name }}">
+                        {% else %}
+                        <div class="placeholder-avatar">👷</div>
+                        {% endif %}
+                    </div>
+                    <div class="master-info">
+                        <h3>{{ master.name }}</h3>
+                        <div class="master-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-num">{{ master.rating }}</span>
+                        </div>
+                        <span class="exp-badge">{{ txt.experience }}: {{ master.experience }} {{ txt.years }}</span>
+                    </div>
+                </div>
+                <div class="master-body">
+                    <p class="specialization">{{ master.translated_specialization }}</p>
+                    
+                    {% if master.portfolio.all %}
+                    <div class="portfolio-mini">
+                        {% for item in master.portfolio.all|slice:":3" %}
+                        <div class="portfolio-item">
+                            <img src="{{ item.image.url }}" alt="{{ item.translated_title }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <a href="#contact-form" class="btn-call-master">{{ txt.call_master }}</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>{{ txt.no_masters|default:"Hozircha ustalar mavjud emas." }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Price Calculator -->
+<section class="calculator-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">{{ txt.calc_title }}</h2>
+            <p class="section-desc">{{ txt.calc_desc }}</p>
+        </div>
+        
+        <div class="calculator-box">
+            <div class="calc-grid">
+                {% for price in prices %}
+                <div class="calc-item">
+                    <div class="item-info">
+                        <h4>{{ price.translated_service_name }}</h4>
+                        <span class="item-price">{{ price.price }} {{ txt.som }} / {{ price.translated_unit }}</span>
+                    </div>
+                    <div class="item-control">
+                        <input type="number" class="calc-qty" data-price="{{ price.price }}" value="0" min="0">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="calc-footer">
+                <span class="total-label">{{ txt.total_sum }}:</span>
+                <span id="total-price" class="total-amount">0 {{ txt.som }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if LANGUAGE_CODE == 'ru' %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+{% elif LANGUAGE_CODE == 'en' %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=en_US" type="text/javascript"></script>
+{% else %}
+<script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ" type="text/javascript"></script>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        ymaps.ready(initMaps);
+
+        function initMaps() {
+            // 1. Main Coverage Map using Yandex Maps
+            const mainMapEl = document.getElementById('main-map');
+            if(mainMapEl) {
+                var mainMap = new ymaps.Map("main-map", {
+                    center: [41.311081, 69.240562],
+                    zoom: 6,
+                    controls: ['zoomControl', 'typeSelector', 'fullscreenControl']
+                });
+
+                var regions = [
+                    {name: "{{ txt.regions.tashkent_city }}", coords: [41.311081, 69.240562]},
+                    {name: "{{ txt.regions.samarkand }}", coords: [39.65417, 66.95972]},
+                    {name: "{{ txt.regions.fergana }}", coords: [40.38333, 71.78333]},
+                    {name: "{{ txt.regions.andijan }}", coords: [40.78333, 72.33333]},
+                    {name: "{{ txt.regions.bukhara }}", coords: [39.77472, 64.42861]},
+                    {name: "{{ txt.regions.khorezm }}", coords: [41.37833, 60.36389]}
+                ];
+
+                regions.forEach(function(region) {
+                    var placemark = new ymaps.Placemark(region.coords, {
+                        balloonContent: '<b>' + region.name + '</b>'
+                    }, {
+                        preset: 'islands#redIcon'
+                    });
+                    mainMap.geoObjects.add(placemark);
+                });
+            }
+
+            // 2. Form Location Picker Map using Yandex Maps
+            const pickerMapEl = document.getElementById('picker-map');
+            if(pickerMapEl) {
+                var pickerMap = new ymaps.Map("picker-map", {
+                    center: [41.311081, 69.240562],
+                    zoom: 13,
+                    controls: ['zoomControl', 'typeSelector', 'fullscreenControl', 'geolocationControl']
+                });
+
+                var myPlacemark = new ymaps.Placemark([41.311081, 69.240562], {
+                    balloonContent: 'Uyingizni belgilang / Укажите ваш дом'
+                }, {
+                    preset: 'islands#blueDotIconWithCaption',
+                    draggable: true
+                });
+
+                pickerMap.geoObjects.add(myPlacemark);
+
+                const yandexInput = document.getElementById('yandex-map-input');
+
+                function updateCoords(lat, lng, fromMap = false) {
+                    document.getElementById('id_latitude').value = lat.toFixed(6);
+                    document.getElementById('id_longitude').value = lng.toFixed(6);
+                    
+                    if (fromMap && yandexInput) {
+                        yandexInput.value = lat.toFixed(6) + ', ' + lng.toFixed(6);
+                        yandexInput.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                    }
+                }
+
+                // Drag End Listener
+                myPlacemark.events.add('dragend', function() {
+                    var coords = myPlacemark.geometry.getCoordinates();
+                    updateCoords(coords[0], coords[1], true);
+                });
+
+                // Map Click Listener
+                pickerMap.events.add('click', function(e) {
+                    var coords = e.get('coords');
+                    myPlacemark.geometry.setCoordinates(coords);
+                    updateCoords(coords[0], coords[1], true);
+                });
+
+                // Live Input Parser for Links and Coordinates
+                if (yandexInput) {
+                    yandexInput.addEventListener('input', function(e) {
+                        const val = e.target.value.trim();
+                        if (!val) {
+                            yandexInput.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                            return;
+                        }
+
+                        let parsedLat = null;
+                        let parsedLng = null;
+
+                        // 1. Raw Coordinates Match
+                        const coordRegex = /([+-]?\d+\.\d+)\s*[\s,;]\s*([+-]?\d+\.\d+)/;
+                        const coordMatch = val.match(coordRegex);
+                        if (coordMatch) {
+                            const val1 = parseFloat(coordMatch[1]);
+                            const val2 = parseFloat(coordMatch[2]);
+                            if (val1 >= 37.0 && val1 <= 46.0 && val2 >= 55.0 && val2 <= 75.0) {
+                                parsedLat = val1;
+                                parsedLng = val2;
+                            } else if (val2 >= 37.0 && val2 <= 46.0 && val1 >= 55.0 && val1 <= 75.0) {
+                                parsedLat = val2;
+                                parsedLng = val1;
+                            } else {
+                                parsedLat = val1;
+                                parsedLng = val2;
+                            }
+                        } else {
+                            // 2. Decode URL and parse Yandex point parameters (ll, pt, point)
+                            const decodedVal = decodeURIComponent(val);
+                            const yandexParamRegex = /(?:ll|pt|point|whatshere\[point\])=([+-]?\d+\.\d+)(?:%2C|,|;)([+-]?\d+\.\d+)/i;
+                            const paramMatch = decodedVal.match(yandexParamRegex);
+                            
+                            if (paramMatch) {
+                                const val1 = parseFloat(paramMatch[1]);
+                                const val2 = parseFloat(paramMatch[2]);
+                                if (val1 >= 37.0 && val1 <= 46.0 && val2 >= 55.0 && val2 <= 75.0) {
+                                    parsedLat = val1;
+                                    parsedLng = val2;
+                                } else if (val2 >= 37.0 && val2 <= 46.0 && val1 >= 55.0 && val1 <= 75.0) {
+                                    parsedLat = val2;
+                                    parsedLng = val1;
+                                } else {
+                                    parsedLat = val2;
+                                    parsedLng = val1;
+                                }
+                            } else {
+                                // 3. Fallback generic float extractor
+                                const allFloats = decodedVal.match(/[+-]?\d+\.\d+/g);
+                                if (allFloats && allFloats.length >= 2) {
+                                    for(let i=0; i<allFloats.length - 1; i++) {
+                                        const f1 = parseFloat(allFloats[i]);
+                                        const f2 = parseFloat(allFloats[i+1]);
+                                        if(f1 >= 37.0 && f1 <= 46.0 && f2 >= 55.0 && f2 <= 75.0) {
+                                            parsedLat = f1;
+                                            parsedLng = f2;
+                                            break;
+                                        }
+                                        if(f2 >= 37.0 && f2 <= 46.0 && f1 >= 55.0 && f1 <= 75.0) {
+                                            parsedLat = f2;
+                                            parsedLng = f1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (parsedLat && parsedLng) {
+                            myPlacemark.geometry.setCoordinates([parsedLat, parsedLng]);
+                            pickerMap.setCenter([parsedLat, parsedLng], 16);
+                            updateCoords(parsedLat, parsedLng, false);
+                            yandexInput.style.borderColor = "#2ecc71";
+                        } else {
+                            yandexInput.style.borderColor = "#e74c3c";
+                        }
+                    });
+                }
+            }
+        }
+
+        // Calculator Logic
+        const qtyInputs = document.querySelectorAll('.calc-qty');
+        const totalDisplay = document.getElementById('total-price');
+        if(totalDisplay) {
+            qtyInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    let total = 0;
+                    qtyInputs.forEach(i => {
+                        total += (parseFloat(i.value) || 0) * parseFloat(i.dataset.price);
+                    });
+                    totalDisplay.innerText = total.toLocaleString('uz-UZ') + " {{ txt.som }}";
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

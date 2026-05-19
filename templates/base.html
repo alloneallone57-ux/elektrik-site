@@ -1,0 +1,343 @@
+{% load static %}{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ seo.title }}{% endblock %}</title>
+    <meta name="description" content="{{ seo.description }}">
+    <meta name="keywords" content="{{ seo.keywords }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0">
+    <style>
+        :root {
+            --nav-bg: rgba(255, 255, 255, 0.7);
+            --nav-blur: 15px;
+        }
+        [data-theme="dark"] {
+            --nav-bg: rgba(9, 30, 66, 0.7);
+        }
+        .navbar {
+            background: var(--nav-bg) !important;
+            backdrop-filter: blur(var(--nav-blur)) !important;
+            -webkit-backdrop-filter: blur(var(--nav-blur)) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="{% url 'index' %}" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Electro<span class="logo-accent">Pro</span></span>
+            </a>
+            
+            <nav class="nav-links">
+                <div class="main-nav">
+                    <a href="{% url 'index' %}">{{ txt.about_us }}</a>
+                    <a href="{% url 'track_order' %}" class="track-link">{{ txt.track_order }}</a>
+                </div>
+
+                <!-- Premium Flag-Based Language Selector -->
+                <div class="lang-dropdown-wrapper">
+                    <button class="lang-dropdown-btn">
+                        {% if LANGUAGE_CODE == 'uz' %}
+                            🇺🇿 UZ
+                        {% elif LANGUAGE_CODE == 'ru' %}
+                            🇷🇺 RU
+                        {% else %}
+                            🇬🇧 EN
+                        {% endif %}
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="lang-dropdown-content">
+                        <a href="/uz{{ request.get_full_path|slice:'3:' }}" class="{% if LANGUAGE_CODE == 'uz' %}active{% endif %}">
+                            🇺🇿 O'zbekcha
+                        </a>
+                        <a href="/ru{{ request.get_full_path|slice:'3:' }}" class="{% if LANGUAGE_CODE == 'ru' %}active{% endif %}">
+                            🇷🇺 Русский
+                        </a>
+                        <a href="/en{{ request.get_full_path|slice:'3:' }}" class="{% if LANGUAGE_CODE == 'en' %}active{% endif %}">
+                            🇬🇧 English
+                        </a>
+                    </div>
+                </div>
+
+                <div class="auth-links">
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                            <a href="{% url 'dashboard' %}" class="btn-cabinet admin">🏢 {{ txt.cabinet }}</a>
+                            <a href="{% url 'admin:index' %}" class="btn-cabinet system">🛠 Admin</a>
+                        {% else %}
+                            <a href="{% url 'worker_dashboard' %}" class="btn-cabinet worker">👷 {{ txt.cabinet }}</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="login-link">{{ txt.login }}</a>
+                    {% endif %}
+                    <a href="{% url 'ariza' %}" class="btn-cta">{{ txt.leave_request }}</a>
+                </div>
+            </nav>
+            
+            <button class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Ustabor-Style Sub-Header Navigation Bar -->
+    <div class="sub-header-bar">
+        <div class="container sub-header-content">
+            <a href="{% url 'ariza' %}" class="sub-item">
+                <span class="sub-icon">📝</span>
+                <span class="sub-text">{{ txt.leave_request|default:"Ariza qoldirish" }}</span>
+            </a>
+            <a href="#" class="sub-item" id="masters-trigger">
+                <span class="sub-icon">👥</span>
+                <span class="sub-text">{{ txt.active_masters_label|default:"Faol Ustalar" }}</span>
+                <span class="sub-badge">18</span>
+            </a>
+            <a href="{% url 'calculator' %}" class="sub-item">
+                <span class="sub-icon">💰</span>
+                <span class="sub-text">{{ txt.calculator|default:"Narxlar kalkulyatori" }}</span>
+            </a>
+            <a href="{% url 'xizmatlar' %}" class="sub-item">
+                <span class="sub-icon">🛡️</span>
+                <span class="sub-text">{{ txt.services|default:"Xizmatlarimiz" }}</span>
+            </a>
+            <a href="#" class="sub-item" id="chat-trigger">
+                <span class="sub-icon">💬</span>
+                <span class="sub-text">{{ txt.chat_label|default:"Usta bilan Chat" }}</span>
+                <span class="sub-badge glow-badge">Online</span>
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <div class="alert-icon">
+                {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
+            </div>
+            <div class="alert-content">{{ message }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="{% url 'index' %}" class="logo" style="margin-bottom: 1.5rem;">
+                        <span class="logo-icon">⚡</span>
+                        <span class="logo-text" style="color: white;">Electro<span class="logo-accent">Pro</span></span>
+                    </a>
+                    <p style="color: #a5adba; font-size: 0.95rem; line-height: 1.8;">{{ txt.footer_desc }}</p>
+                </div>
+                <div class="footer-col">
+                    <h4>{{ txt.services }}</h4>
+                    <ul>
+                        <li><a href="{% url 'xizmatlar' %}">{{ txt.electrical_services }}</a></li>
+                        <li><a href="{% url 'xizmatlar' %}">EV Zaryadka</a></li>
+                        <li><a href="{% url 'xizmatlar' %}">Smart Home</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>{{ txt.company }}</h4>
+                    <ul>
+                        <li><a href="{% url 'haqimizda' %}">{{ txt.about_us }}</a></li>
+                        <li><a href="{% url 'vakansiyalar' %}">{{ txt.vacancies }}</a></li>
+                        <li><a href="{% url 'yangiliklar' %}">{{ txt.news }}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>{{ txt.help }}</h4>
+                    <ul>
+                        <li><a href="{% url 'faq' %}">{{ txt.faq }}</a></li>
+                        <li><a href="{% url 'boglanish' %}">{{ txt.contact }}</a></li>
+                        <li><a href="{% url 'track_order' %}">{{ txt.track_order }}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 ElectroPro. {{ txt.all_rights }}.</p>
+                <div class="footer-social">
+                    <a href="#">FB</a>
+                    <a href="#">IG</a>
+                    <a href="#">TG</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Contact Buttons -->
+    <div class="floating-contact">
+        <a href="https://t.me/ElectroPro_Bot" target="_blank" class="floating-btn tg" title="Telegram Bot">
+            <span>✈️</span>
+        </a>
+        <a href="https://wa.me/998781501154" target="_blank" class="floating-btn wa" title="WhatsApp">
+            <span>💬</span>
+        </a>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuBtn.classList.toggle('open');
+            });
+        }
+
+        // Interactive Region Selector Logic
+        function selectRegion(regionName) {
+            localStorage.setItem('active_region', regionName);
+            const labelEl = document.getElementById('active-region-label');
+            if (labelEl) labelEl.innerText = regionName;
+            
+            // Auto-sync with forms
+            const regionSelects = document.querySelectorAll('select[name="region"]');
+            regionSelects.forEach(select => {
+                for(let option of select.options) {
+                    if (option.value.toLowerCase().includes(regionName.toLowerCase())) {
+                        select.value = option.value;
+                        select.dispatchEvent(new Event('change'));
+                        break;
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore region
+            const savedRegion = localStorage.getItem('active_region');
+            if (savedRegion) {
+                const labelEl = document.getElementById('active-region-label');
+                if (labelEl) labelEl.innerText = savedRegion;
+            }
+
+            // Masters Modal Trigger
+            const mastersTrigger = document.getElementById('masters-trigger');
+            const mastersModal = document.getElementById('masters-modal');
+            if (mastersTrigger && mastersModal) {
+                mastersTrigger.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mastersModal.classList.add('active');
+                });
+            }
+            window.closeMastersModal = function() {
+                if (mastersModal) mastersModal.classList.remove('active');
+            }
+
+            // Chat Support Drawer Trigger
+            const chatTrigger = document.getElementById('chat-trigger');
+            const chatDrawer = document.getElementById('chat-drawer');
+            if (chatTrigger && chatDrawer) {
+                chatTrigger.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    chatDrawer.classList.add('active');
+                });
+            }
+            window.closeChatDrawer = function() {
+                if (chatDrawer) chatDrawer.classList.remove('active');
+            }
+        });
+    </script>
+
+    <!-- Faol Ustalar Popup Modal (Ustabor-Style) -->
+    <div id="masters-modal" class="custom-modal">
+        <div class="modal-backdrop" onclick="closeMastersModal()"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>⚡ Faol Elektrik Ustalarimiz</h3>
+                <button class="close-btn" onclick="closeMastersModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="masters-list">
+                    <div class="master-card-mini">
+                        <div class="master-avatar">👨‍🔧</div>
+                        <div class="master-info-mini">
+                            <h4>Jasur Rahimov</h4>
+                            <div class="master-rating">⭐ 4.9 (124 ta sharh)</div>
+                            <span class="status-badge online">Faol</span>
+                        </div>
+                        <a href="{% url 'ariza' %}?worker=Jasur" class="btn-select-master">Tanlash</a>
+                    </div>
+                    <div class="master-card-mini">
+                        <div class="master-avatar">👷‍♂️</div>
+                        <div class="master-info-mini">
+                            <h4>Farhod Karimov</h4>
+                            <div class="master-rating">⭐ 4.8 (98 ta sharh)</div>
+                            <span class="status-badge online">Faol</span>
+                        </div>
+                        <a href="{% url 'ariza' %}?worker=Farhod" class="btn-select-master">Tanlash</a>
+                    </div>
+                    <div class="master-card-mini">
+                        <div class="master-avatar">⚡</div>
+                        <div class="master-info-mini">
+                            <h4>Alisher To'rayev</h4>
+                            <div class="master-rating">⭐ 5.0 (42 ta sharh)</div>
+                            <span class="status-badge online">Faol</span>
+                        </div>
+                        <a href="{% url 'ariza' %}?worker=Alisher" class="btn-select-master">Tanlash</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Support Drawer (Ustabor-Style) -->
+    <div id="chat-drawer" class="custom-drawer">
+        <div class="drawer-backdrop" onclick="closeChatDrawer()"></div>
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3>💬 Usta bilan Jonli Muloqot</h3>
+                <button class="close-btn" onclick="closeChatDrawer()">&times;</button>
+            </div>
+            <div class="drawer-body">
+                <p class="drawer-intro">Hozirgi vaqtda bog'lanish va maslahat olish uchun kanalni tanlang:</p>
+                <div class="chat-options">
+                    <a href="https://t.me/Tosh_elektrik_bot" target="_blank" class="chat-option telegram">
+                        <span class="chat-icon">✈️</span>
+                        <div class="chat-text">
+                            <strong>Telegram Bot ⚡</strong>
+                            <span>Tezkor ariza berish va maslahat</span>
+                        </div>
+                    </a>
+                    <a href="https://t.me/6844314113" target="_blank" class="chat-option telegram-direct">
+                        <span class="chat-icon">💬</span>
+                        <div class="chat-text">
+                            <strong>Telegram Operator 👤</strong>
+                            <span>Mutaxassis bilan to'g'ridan-to'g'ri aloqa</span>
+                        </div>
+                    </a>
+                    <a href="tel:+998901234567" class="chat-option phone">
+                        <span class="chat-icon">📞</span>
+                        <div class="chat-text">
+                            <strong>Call Markaz</strong>
+                            <span>+998 (90) 123-45-67</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

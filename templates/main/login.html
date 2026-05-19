@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kirish — ElectroPro Admin{% endblock %}
+
+{% block content %}
+<section style="min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #0d1117; padding: 2rem;">
+    <div style="width: 100%; max-width: 400px; background: #161b22; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #30363d;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="color: white; font-size: 2rem; margin-bottom: 0.5rem;">⚡ Admin Kirish</h1>
+            <p style="color: #a5adba;">Tizimga kirish uchun login va parolingizni kiriting</p>
+        </div>
+
+        {% if form.errors %}
+        <div style="background: rgba(248, 81, 73, 0.1); border: 1px solid #f85149; color: #f85149; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+            Login yoki parol xato! Iltimos, qaytadan urinib ko'ring.
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; color: white; margin-bottom: 0.5rem; font-weight: 600;">Login</label>
+                <input type="text" name="username" required placeholder="Loginni kiriting" 
+                       style="width: 100%; padding: 0.8rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; outline: none; transition: border-color 0.3s ease;">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; color: white; margin-bottom: 0.5rem; font-weight: 600;">Parol</label>
+                <input type="password" name="password" required placeholder="Parolni kiriting" 
+                       style="width: 100%; padding: 0.8rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; outline: none; transition: border-color 0.3s ease;">
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s ease;">
+                Tizimga kirish
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'index' %}" style="color: #a5adba; text-decoration: none; font-size: 0.9rem;">← Asosiy sahifaga qaytish</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    input:focus {
+        border-color: var(--primary) !important;
+    }
+</style>
+{% endblock %}

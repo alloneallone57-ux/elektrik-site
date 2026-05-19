@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroPro - Mukammal Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary: #f5a623;
+            --bg-dark: #090b0e;
+            --bg-card: #14171c;
+            --text-main: #ffffff;
+            --text-muted: #8b949e;
+            --success: #2ea043;
+            --warning: #f1e05a;
+            --danger: #ff4d4d;
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-theme {
+            --bg-dark: #f4f7f6;
+            --bg-card: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            text-align: left;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            background: rgba(245, 166, 35, 0.1);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .notif-btn {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+        }
+
+        .dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--bg-dark);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-muted);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+        }
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: rgba(46, 160, 67, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(241, 224, 90, 0.2);
+            color: var(--warning);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            width: 500px;
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .modal-card h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .modal-detail {
+            margin-bottom: 1rem;
+        }
+
+        .modal-detail label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .modal-detail p {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn-view {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-view:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        /* Settings */
+        .settings-group {
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .settings-group h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-box:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        #notif-panel {
+            display: none;
+            position: absolute;
+            top: 70px;
+            right: 2rem;
+            width: 300px;
+            background: #1c2128;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            z-index: 100;
+            padding: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Modal Details -->
+    <div id="modal-details" class="modal-overlay">
+        <div class="modal-card">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Ariza Tafsilotlari</h2>
+            <div class="modal-detail"><label>Mijoz:</label>
+                <p id="det-name"></p>
+            </div>
+            <div class="modal-detail"><label>Telefon:</label>
+                <p id="det-phone"></p>
+            </div>
+            <div class="modal-detail"><label>Xizmat turi:</label>
+                <p id="det-service"></p>
+            </div>
+            <div class="modal-detail"><label>Sana:</label>
+                <p id="det-date"></p>
+            </div>
+            <div class="modal-detail"><label>Hudud:</label>
+                <p id="det-region"></p>
+            </div>
+            <div class="modal-detail"><label>Izoh:</label>
+                <p id="det-msg"></p>
+            </div>
+            <button class="btn-view" style="width: 100%; margin-top: 1rem;" onclick="closeModal()">Yopish</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h2>ElectroPro</h2>
+        <button class="nav-item active" onclick="showTab('dashboard', event)">🏠 Dashboard</button>
+        <button class="nav-item" onclick="showTab('analytics', event)">📊 Tahlil</button>
+        <button class="nav-item" onclick="showTab('map_tab', event)">🗺 Xarita</button>
+        <button class="nav-item" onclick="showTab('requests', event)">📩 Arizalar</button>
+        <button class="nav-item" onclick="showTab('workers_tab', event)">👷‍♂️ Ishchilar</button>
+        <button class="nav-item" onclick="showTab('materials', event)">🛠 Materiallar</button>
+        <button class="nav-item" onclick="showTab('settings', event)">⚙ Sozlamalar</button>
+
+        <div style="margin-top: auto;">
+            <a href="{% url 'admin:index' %}" target="_blank" class="nav-item" style="color: var(--primary); font-weight: bold; border: 1px solid var(--primary); display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 0.6rem; margin-top: 1rem; font-size: 0.9rem;">🛠 <span style="white-space: nowrap;">Admin Panel</span></a>
+            <a href="{% url 'index' %}" class="nav-item"
+                style="color: var(--text-muted); display: block; text-decoration: none;">🌐 Saytga qaytish</a>
+            <a href="{% url 'logout' %}" class="nav-item"
+                style="color: var(--danger); display: block; text-decoration: none; font-weight: bold;">🚪 Chiqish</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <h1 id="tab-title">Dashboard</h1>
+                <div id="theme-indicator"
+                    style="font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 20px; background: var(--border-color); color: var(--text-muted);">
+                    Dark Mode</div>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button class="notif-btn" onclick="toggleNotif()">🔔 <span class="dot" {% if new_requests == 0 %}style="display:none;"{% endif %}></span></button>
+            </div>
+        </div>
+
+        <div id="notif-panel">
+            <p style="font-weight:bold; margin-bottom:10px;">Bildirishnomalar</p>
+            {% if new_requests > 0 %}
+            <p style="font-size:0.8rem; color:var(--text-main);">Sizda {{ new_requests }} ta yangi ariza bor!</p>
+            {% else %}
+            <p style="font-size:0.8rem; color:var(--text-muted);">Hozircha yangi bildirishnomalar yo'q</p>
+            {% endif %}
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Jami Arizalar</h3>
+                    <div class="value">{{ total_requests }}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Yangi Arizalar</h3>
+                    <div class="value">{{ new_requests }}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Faol Ustalar</h3>
+                    <div class="value">{% if staff %}{{ staff.available_staff }}/{{ staff.total_staff }}{% else %}0/0{% endif %}</div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: 1.5rem; border-left: 4px solid var(--primary); padding-left: 1rem;">So'nggi arizalar</h2>
+                    <input type="text" placeholder="Qidiruv..." class="input-box" style="width: 250px;" onkeyup="filterTable(this, 'dash-table')">
+                </div>
+                <table id="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Mijoz</th>
+                            <th>Xizmat</th>
+                            <th>Hudud</th>
+                            <th>Status</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in recent_requests|slice:":5" %}
+                        <tr>
+                            <td>{{ req.name }} {{ req.surname }}</td>
+                            <td>{{ req.service_type }}</td>
+                            <td>{{ req.region|default:"Noma'lum" }}</td>
+                            <td>
+                                <span class="status-badge {% if req.status == 'NEW' %}status-pending{% endif %}">
+                                    {{ req.get_status_display }}
+                                </span>
+                            </td>
+                            <td style="display: flex; gap: 0.5rem;">
+                                <button class="btn-view"
+                                    onclick="openDetails('{{ req.name|escapejs }} {{ req.surname|escapejs }}', '{{ req.phone|escapejs }}', '{{ req.service_type|escapejs }}', '{{ req.message|escapejs }}', '{{ req.created_at|date:'d.m.Y H:i' }}', '{{ req.region|escapejs }}')">Ko'rish</button>
+                                {% if req.status != 'COMPLETED' %}
+                                <a href="{% url 'mark_processed' req.id %}" class="btn-view"
+                                    style="background: var(--success); color: white; text-decoration: none;">✅
+                                    Bajarildi</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">Hozircha arizalar yo'q.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="table-container" style="margin-bottom: 0;">
+                    <h2>So'nggi 7 kunlik faollik</h2>
+                    <canvas id="activityChart" height="200"></canvas>
+                </div>
+                <div class="table-container" style="margin-bottom: 0;">
+                    <h2>Arizalar holati bo'yicha</h2>
+                    <div style="max-width: 300px; margin: 0 auto;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <h2>Hududlar bo'yicha taqsimot</h2>
+                <canvas id="regionChart" height="100"></canvas>
+            </div>
+        </div>
+
+        <!-- Map Tab -->
+        <div id="map_tab" class="tab-content">
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Arizalar Geografiyasi</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Barcha arizalar hududlar bo'yicha</p>
+                </div>
+                <div id="admin-map" style="height: 600px; border-radius: 12px; border: 1px solid var(--border-color);"></div>
+            </div>
+        </div>
+
+        <!-- Requests Tab -->
+        <div id="requests" class="tab-content">
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Barcha Arizalar Ro'yxati</h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" placeholder="Ism yoki xizmat..." class="input-box" style="margin-top: 0; max-width: 200px;" onkeyup="filterTable(this, 'req-table')">
+                        <a href="{% url 'admin:main_servicerequest_changelist' %}" target="_blank" class="btn-view" style="text-decoration: none;">Boshqarish</a>
+                    </div>
+                </div>
+                <table id="req-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mijoz</th>
+                            <th>Sana</th>
+                            <th>Xizmat</th>
+                            <th>Hudud</th>
+                            <th>Status</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in recent_requests %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td>{{ req.name }} {{ req.surname }}</td>
+                            <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>{{ req.service_type }}</td>
+                            <td>{{ req.region|default:"Noma'lum" }}</td>
+                            <td><span class="status-badge {% if req.status == 'NEW' %}status-pending{% endif %}">{{
+                                    req.get_status_display }}</span></td>
+                            <td style="display: flex; gap: 0.5rem;">
+                                <button class="btn-view"
+                                    onclick="openDetails('{{ req.name|escapejs }} {{ req.surname|escapejs }}', '{{ req.phone|escapejs }}', '{{ req.service_type|escapejs }}', '{{ req.message|escapejs }}', '{{ req.created_at|date:'d.m.Y H:i' }}', '{{ req.region|escapejs }}')">Ko'rish</button>
+                                {% if not req.is_processed %}
+                                <a href="{% url 'mark_processed' req.id %}" class="btn-view"
+                                    style="background: var(--success); color: white; text-decoration: none;">✅
+                                    Bajarildi</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">Hozircha arizalar yo'q.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Workers Tab -->
+        <div id="workers_tab" class="tab-content">
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Ishchilar Monitoringi</h2>
+                    <a href="{% url 'admin:auth_user_changelist' %}" target="_blank" class="btn-view" style="text-decoration: none;">+ Ishchi qo'shish</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foydalanuvchi</th>
+                            <th>Faol ishlar</th>
+                            <th>Bajarilganlar</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for worker in workers %}
+                        <tr>
+                            <td>{{ worker.username }}</td>
+                            <td><span style="color: var(--primary); font-weight: bold;">{{ worker.active_jobs_count
+                                    }}</span></td>
+                            <td><span style="color: var(--success);">{{ worker.completed_jobs_count }}</span></td>
+                            <td>
+                                {% if worker.active_jobs_count > 0 %}
+                                <span class="status-badge"
+                                    style="background: rgba(245, 166, 35, 0.2); color: var(--primary);">Ishda</span>
+                                {% else %}
+                                <span class="status-badge">Bo'sh</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">Ishchilar topilmadi. (Admin panelidan is_staff bo'lgan foydalanuvchilar
+                                qo'shing)</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Materials Tab -->
+        <div id="materials" class="tab-content">
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Materiallar Ombori</h2>
+                    <a href="{% url 'admin:main_material_changelist' %}" target="_blank" class="btn-view" style="text-decoration: none;">+ Qo'shish /
+                        Boshqarish</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rasm</th>
+                            <th>Xizmat Nomi</th>
+                            <th>Materiallar Ro'yxati</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mat in materials_list %}
+                        <tr>
+                            <td>
+                                {% if mat.image %}
+                                <img src="{{ mat.image.url }}"
+                                    style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                                {% else %}
+                                <div
+                                    style="width: 50px; height: 50px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    📦</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ mat.service_name }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">{{
+                                mat.material_list|truncatewords:20 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">Hozircha materiallar qo'shilmagan.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="settings-group">
+                <h3>Asosiy Sozlamalar</h3>
+                <label>Operator Telefon Raqami</label>
+                <input type="text" class="input-box" value="+998 78 150 11 54">
+                <label style="margin-top: 10px; display: block;">Ish Vaqti (Ertalab/Kechqurun)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="time" class="input-box" value="09:00">
+                    <input type="time" class="input-box" value="18:00">
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Interfeys Sozlamalari</h3>
+                <label>Mavzu (Theme)</label>
+                <select id="theme-select" class="input-box" onchange="changeTheme(this.value)">
+                    <option value="dark">Qora (Dark)</option>
+                    <option value="light">Oq (Light)</option>
+                    <option value="system">Tizim (System)</option>
+                </select>
+            </div>
+            <div class="settings-group">
+                <h3>Telegram Bot Sozlamalari</h3>
+                <label>Bot Token</label>
+                <input type="password" class="input-box" value="HIDDEN">
+                <label style="margin-top: 10px; display: block;">Admin Chat ID</label>
+                <input type="text" class="input-box" value="HIDDEN">
+                <button class="btn-view" style="margin-top: 1.5rem; width: 100%;"
+                    onclick="alert('Sozlamalar saqlandi!')">Saqlash</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId, event) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            const titles = { 'dashboard': 'Dashboard', 'analytics': 'Tahlil va Statistika', 'map_tab': 'Hududlar Xaritasi', 'requests': 'Arizalar', 'workers_tab': 'Ishchilar Monitoringi', 'materials': 'Materiallar', 'settings': 'Sozlamalar' };
+            document.getElementById('tab-title').innerText = titles[tabId];
+            
+            if(tabId === 'analytics') initCharts();
+            if(tabId === 'map_tab') initMap();
+        }
+
+        let mapInitialized = false;
+        function initMap() {
+            if(mapInitialized) return;
+            mapInitialized = true;
+
+            setTimeout(() => {
+                var adminMap = L.map('admin-map').setView([41.311081, 69.240562], 6);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(adminMap);
+
+                var regionCoords = {
+                    "Toshkent shahri": [41.311081, 69.240562],
+                    "Toshkent viloyati": [41.2, 69.6],
+                    "Samarqand viloyati": [39.65417, 66.95972],
+                    "Andijon viloyati": [40.78333, 72.33333],
+                    "Buxoro viloyati": [39.77472, 64.42861],
+                    "Farg'ona viloyati": [40.38333, 71.78333],
+                    "Xorazm viloyati": [41.37833, 60.36389],
+                    "Namangan viloyati": [41.00111, 71.6725],
+                    "Navoiy viloyati": [40.08444, 65.37917],
+                    "Qoraqalpog'iston": [42.45333, 59.61028],
+                    "Qashqadaryo viloyati": [38.86056, 65.78917],
+                    "Surxondaryo viloyati": [37.22417, 67.27833],
+                    "Sirdaryo viloyati": [40.48972, 68.78444],
+                    "Jizzax viloyati": [40.11583, 67.84222]
+                };
+
+                /* {% for req in recent_requests %} */
+                    if(regionCoords["{{ req.region|escapejs }}"]) {
+                        L.circleMarker(regionCoords["{{ req.region|escapejs }}"], {
+                            radius: 8,
+                            fillColor: "#f5a623",
+                            color: "#000",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(adminMap)
+                        .bindPopup("<b>{{ req.name|escapejs }}</b><br>{{ req.service_type|escapejs }}");
+                    }
+                /* {% endfor %} */
+            }, 200);
+        }
+
+        let chartsInitialized = false;
+        function initCharts() {
+            if(chartsInitialized) return;
+            chartsInitialized = true;
+
+            // Activity Chart
+            new Chart(document.getElementById('activityChart'), {
+                type: 'line',
+                data: {
+                    labels: [
+                        /* {% for label in activity_labels %} */
+                        "{{ label }}",
+                        /* {% endfor %} */
+                    ],
+                    datasets: [{
+                        label: 'Arizalar soni',
+                        data: [
+                            /* {% for data in activity_data %} */
+                            {{ data }},
+                            /* {% endfor %} */
+                        ],
+                        borderColor: '#f5a623',
+                        backgroundColor: 'rgba(245, 166, 35, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            // Status Chart
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        /* {% for s in status_counts %} */
+                        "{{ s.status }}",
+                        /* {% endfor %} */
+                    ],
+                    datasets: [{
+                        data: [
+                            /* {% for s in status_counts %} */
+                            {{ s.count }},
+                            /* {% endfor %} */
+                        ],
+                        backgroundColor: ['#2ea043', '#f5a623', '#8b949e', '#ff4d4d']
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            // Region Chart
+            new Chart(document.getElementById('regionChart'), {
+                type: 'bar',
+                data: {
+                    labels: [
+                        /* {% for r in region_counts %} */
+                        "{{ r.region|default:'Nomalum'|escapejs }}",
+                        /* {% endfor %} */
+                    ],
+                    datasets: [{
+                        label: 'Arizalar',
+                        data: [
+                            /* {% for r in region_counts %} */
+                            {{ r.count }},
+                            /* {% endfor %} */
+                        ],
+                        backgroundColor: '#f5a623'
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function openDetails(name, phone, service, msg, date, region) {
+            document.getElementById('det-name').innerText = name;
+            document.getElementById('det-phone').innerText = phone;
+            document.getElementById('det-service').innerText = service;
+            document.getElementById('det-msg').innerText = msg || "Yo'q";
+            document.getElementById('det-date').innerText = date;
+            if(document.getElementById('det-region')) document.getElementById('det-region').innerText = region;
+            document.getElementById('modal-details').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-details').style.display = 'none';
+        }
+
+        function filterTable(input, tableId) {
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let show = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length - 1; j++) {
+                    if (td[j] && td[j].innerText.toLowerCase().indexOf(filter) > -1) {
+                        show = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = show ? "" : "none";
+            }
+        }
+
+        function toggleNotif() {
+            const p = document.getElementById('notif-panel');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Theme Switcher Logic
+        function changeTheme(theme) {
+            const body = document.body;
+            const indicator = document.getElementById('theme-indicator');
+
+            if (theme === 'system') {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                theme = isDark ? 'dark' : 'light';
+            }
+
+            if (theme === 'light') {
+                body.classList.add('light-theme');
+                indicator.innerText = 'Light Mode';
+            } else {
+                body.classList.remove('light-theme');
+                indicator.innerText = 'Dark Mode';
+            }
+
+            localStorage.setItem('dashboard-theme', document.getElementById('theme-select').value);
+        }
+
+        // Init theme
+        const savedTheme = localStorage.getItem('dashboard-theme') || 'dark';
+        document.getElementById('theme-select').value = savedTheme;
+        changeTheme(savedTheme);
+    </script>
+</body>
+
+</html>

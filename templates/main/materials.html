@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="hero" style="min-height: 80vh;">
+    <div class="container">
+        <div style="background: var(--bg-card); padding: 3rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
+            <h1 style="color: var(--primary); margin-bottom: 1rem;">Murojaatingiz qabul qilindi!</h1>
+            <p style="color: var(--text-muted); margin-bottom: 3rem;">Siz tanlagan <strong>{{ service_type }}</strong> xizmati uchun quyidagi materiallar talab qilinishi mumkin:</p>
+
+            {% if materials %}
+                <div style="text-align: left; max-width: 600px; margin: 0 auto; background: rgba(0,0,0,0.2); padding: 2rem; border-radius: 16px;">
+                    <h3 style="margin-bottom: 1rem;">📋 Kerakli materiallar:</h3>
+                    <div style="white-space: pre-line; line-height: 1.8;">
+                        {{ materials.material_list }}
+                    </div>
+                </div>
+            {% else %}
+                <p>Hozircha ushbu xizmat turi uchun materiallar ro'yxati qo'shilmagan. Operatorimiz sizga barchasini tushuntirib beradi.</p>
+            {% endif %}
+
+            <div style="margin-top: 3rem;">
+                <a href="{% url 'index' %}" class="btn-primary-outline">Asosiy sahifaga qaytish</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

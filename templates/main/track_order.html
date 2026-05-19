@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section style="padding: 6rem 0; background: #f0f2f5; min-height: 80vh;">
+    <div class="container" style="max-width: 800px;">
+        <div style="background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1.5rem; color: var(--text-dark); text-align: center;">Murojaat holatini kuzatish</h1>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 3rem;">Telefon raqamingizni kiriting va barcha arizalaringiz holatini ko'ring.</p>
+
+            <form method="POST" style="display: flex; gap: 1rem; margin-bottom: 4rem;">
+                {% csrf_token %}
+                <input type="tel" name="phone" value="{{ phone|default:'' }}" placeholder="+998 90 123 45 67" required 
+                       style="flex: 1; padding: 1.2rem; border: 2px solid #e1e5ee; border-radius: 12px; outline: none; font-size: 1.1rem;">
+                <button type="submit" style="padding: 0 2.5rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s;">Tekshirish</button>
+            </form>
+
+            {% if orders %}
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    {% for order in orders %}
+                    <div style="border: 1px solid #eee; border-radius: 16px; padding: 1.5rem; position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.2rem;">Ariza #{{ order.id }}</h3>
+                                <small style="color: #888;">{{ order.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <span style="padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: bold; 
+                                {% if order.status == 'NEW' %} background: #fff8e1; color: #f57c00; 
+                                {% elif order.status == 'ACCEPTED' %} background: #e3f2fd; color: #1976d2;
+                                {% elif order.status == 'COMPLETED' %} background: #e8f5e9; color: #388e3c;
+                                {% else %} background: #ffebee; color: #d32f2f; {% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <p style="margin: 0 0 1rem 0; color: #555;"><strong>Xizmat:</strong> {{ order.service_type }}</p>
+                        
+                        {% if order.assigned_to %}
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">👷</div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem;"><strong>Usta tayinlangan:</strong> {{ order.assigned_to.first_name|default:order.assigned_to.username }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if order.status == 'COMPLETED' %}
+                            <hr style="border: 0; border-top: 1px solid #eee; margin: 1.5rem 0;">
+                            <h4 style="margin-bottom: 1rem;">Usta ishini baholang:</h4>
+                            <form action="{% url 'submit_review' order.id %}" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                                {% csrf_token %}
+                                <div style="display: flex; gap: 0.5rem; font-size: 1.5rem; cursor: pointer;">
+                                    <input type="radio" name="rating" value="5" id="r5-{{ order.id }}" checked style="display:none">
+                                    <label for="r5-{{ order.id }}">⭐</label>
+                                    <input type="radio" name="rating" value="4" id="r4-{{ order.id }}" style="display:none">
+                                    <label for="r4-{{ order.id }}">⭐</label>
+                                    <input type="radio" name="rating" value="3" id="r3-{{ order.id }}" style="display:none">
+                                    <label for="r3-{{ order.id }}">⭐</label>
+                                    <input type="radio" name="rating" value="2" id="r2-{{ order.id }}" style="display:none">
+                                    <label for="r2-{{ order.id }}">⭐</label>
+                                    <input type="radio" name="rating" value="1" id="r1-{{ order.id }}" style="display:none">
+                                    <label for="r1-{{ order.id }}">⭐</label>
+                                </div>
+                                <textarea name="comment" placeholder="Izoh qoldiring..." style="padding: 1rem; border: 1px solid #ddd; border-radius: 8px; min-height: 80px;"></textarea>
+                                <button type="submit" style="background: #333; color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer;">Yuborish</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% elif phone %}
+                <p style="text-align: center; color: #d32f2f; margin-top: 2rem;">Ushbu raqamga tegishli arizalar topilmadi.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

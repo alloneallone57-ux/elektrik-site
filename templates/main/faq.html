@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ txt.faq }} — ElectroPro{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.faq }}</h1>
+        <p class="page-subtitle">{{ txt.faq_desc_top|default:"Bizning eng ko'p beriladigan savollarga javoblar." }}</p>
+    </div>
+</section>
+
+<section class="faq-section-main">
+    <div class="container">
+        <div class="faq-accordion-container">
+            <div class="faq-item-premium" onclick="toggle(this)">
+                <div class="faq-q-premium">
+                    <span>📌 {{ txt.faq_q1|default:"Elektr montaj xizmati qancha turadi?" }}</span>
+                    <span class="arrow-icon">▼</span>
+                </div>
+                <div class="faq-a-premium">
+                    <div class="faq-a-content">
+                        {{ txt.faq_a1|default:"Narx uydagi xona soni va sim uzunligiga qarab farq qiladi. Aniq narxni usta ko'rigidan so'ng bilish mumkin." }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item-premium" onclick="toggle(this)">
+                <div class="faq-q-premium">
+                    <span>🚗 {{ txt.faq_q2|default:"EV zaryadka stansiyasi o'rnatish qancha vaqt oladi?" }}</span>
+                    <span class="arrow-icon">▼</span>
+                </div>
+                <div class="faq-a-premium">
+                    <div class="faq-a-content">
+                        {{ txt.faq_a2|default:"Odatda uyga o'rnatish 4-6 soat davom etadi. Maxsus loyihalar 1-2 kun talab qilishi mumkin." }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item-premium" onclick="toggle(this)">
+                <div class="faq-q-premium">
+                    <span>⚡ {{ txt.faq_q3|default:"Qaysi shaharlarda xizmat ko'rsatasiz?" }}</span>
+                    <span class="arrow-icon">▼</span>
+                </div>
+                <div class="faq-a-premium">
+                    <div class="faq-a-content">
+                        {{ txt.faq_a3|default:"Hozirda O'zbekistonning barcha viloyatlari bo'yicha xizmat ko'rsatish tarmog'imizni kengaytirmoqdamiz." }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item-premium" onclick="toggle(this)">
+                <div class="faq-q-premium">
+                    <span>🛡️ {{ txt.faq_q4|default:"Kafolat muddati qancha?" }}</span>
+                    <span class="arrow-icon">▼</span>
+                </div>
+                <div class="faq-a-premium">
+                    <div class="faq-a-content">
+                        {{ txt.faq_a4|default:"Barcha bajarilgan montaj ishlariga 3 yilgacha rasmiy kafolat beriladi." }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function toggle(item) {
+        document.querySelectorAll('.faq-item-premium').forEach(el => {
+            if (el !== item) el.classList.remove('open');
+        });
+        item.classList.toggle('open');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}{% load i18n %}
+
+{% block title %}{{ txt.calc_title }} — ElectroPro{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="page-title">{{ txt.calc_title }}</h1>
+        <p class="page-subtitle">{{ txt.calc_desc }}</p>
+    </div>
+</section>
+
+<section class="calculator-main-section">
+    <div class="container">
+        <div class="calculator-layout-grid">
+            
+            <!-- Calculator Selection Area -->
+            <div class="calc-selection-side">
+                <div class="glass-card-premium">
+                    <h3 class="side-title">{{ txt.select_services|default:"Xizmatlarni tanlang" }}</h3>
+                    
+                    <div id="calculator-items" class="calc-items-list">
+                        {% for price in prices %}
+                        <div class="calc-row-item">
+                            <div class="item-meta">
+                                <h4>{{ price.translated_service_name }}</h4>
+                                <p class="item-unit-price">{{ price.price }} {{ txt.som }} / {{ price.translated_unit }}</p>
+                            </div>
+                            <div class="item-counter">
+                                <button onclick="changeQty(this, -1)" class="counter-btn minus">-</button>
+                                <input type="number" class="calc-qty" 
+                                       data-price="{{ price.price }}" 
+                                       data-name="{{ price.translated_service_name }}" 
+                                       value="0" min="0" onchange="calculateTotal()">
+                                <button onclick="changeQty(this, 1)" class="counter-btn plus">+</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receipt / Summary Sticky -->
+            <div class="calc-summary-side">
+                <div class="receipt-card-premium">
+                    <h3 class="receipt-title">{{ txt.invoice_est|default:"Hisob-faktura (Taxminiy)" }}</h3>
+                    
+                    <div id="receipt-items" class="receipt-body">
+                        <div class="empty-receipt-msg">
+                            <p>{{ txt.nothing_selected|default:"Hali hech narsa tanlanmadi" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="receipt-footer">
+                        <span class="total-label">{{ txt.total_sum }}:</span>
+                        <span id="grand-total" class="total-val">0 {{ txt.som }}</span>
+                    </div>
+
+                    <a href="{% url 'index' %}#contact-form" class="btn-submit-glow">{{ txt.order_now }}</a>
+                    
+                    <p class="receipt-disclaimer">* {{ txt.calc_disclaimer|default:"Yakuniy narx usta ko'rigidan so'ng o'zgarishi mumkin." }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    function changeQty(btn, delta) {
+        let input = btn.parentElement.querySelector('input');
+        let val = parseInt(input.value) + delta;
+        if (val < 0) val = 0;
+        input.value = val;
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        let receiptHtml = '';
+        let hasItems = false;
+        const somTxt = "{{ txt.som }}";
+
+        document.querySelectorAll('.calc-qty').forEach(input => {
+            let qty = parseInt(input.value) || 0;
+            if (qty > 0) {
+                hasItems = true;
+                let price = parseFloat(input.dataset.price);
+                let name = input.dataset.name;
+                let sum = qty * price;
+                total += sum;
+                receiptHtml += `
+                    <div class="receipt-item-row">
+                        <span class="item-name">${name} <small>(x${qty})</small></span>
+                        <span class="item-sum">${sum.toLocaleString('uz-UZ')} ${somTxt}</span>
+                    </div>
+                `;
+            }
+        });
+
+        const receiptBody = document.getElementById('receipt-items');
+        if (hasItems) {
+            receiptBody.innerHTML = receiptHtml;
+        } else {
+            receiptBody.innerHTML = `<div class="empty-receipt-msg"><p>{{ txt.nothing_selected|default:"Hali hech narsa tanlanmadi" }}</p></div>`;
+        }
+        document.getElementById('grand-total').innerText = total.toLocaleString('uz-UZ') + " " + somTxt;
+    }
+</script>
+{% endblock %}
