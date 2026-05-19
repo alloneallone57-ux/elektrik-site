@@ -31,13 +31,13 @@ def send_link(github_url):
     try:
         r = requests.post(url, data={"chat_id": admin_id, "text": text, "parse_mode": "Markdown"})
         if r.status_code == 200:
-            print("\n✅ Muvaffaqiyatli: Havola Telegram bot orqali yuborildi!")
+            print("\nMuvaffaqiyatli: Havola Telegram bot orqali yuborildi!")
             return True
         else:
-            print(f"\n❌ Xatolik: Bot javob bermadi. Status code: {r.status_code}. Javob: {r.text}")
+            print(f"\nXatolik: Bot javob bermadi. Status code: {r.status_code}. Javob: {r.text}")
             return False
     except Exception as e:
-        print(f"\n❌ Telegram xatoligi: {e}")
+        print(f"\nTelegram xatoligi: {e}")
         return False
 
 if __name__ == '__main__':
